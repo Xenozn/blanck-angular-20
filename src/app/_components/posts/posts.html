@@ -1,0 +1,8 @@
+<p>posts works!</p>
+
+
+<button (click)="loadPosts()"> Charger les posts</button>
+
+@for (post of postService.posts(); track post.id){
+  <p>{{ post.title}}</p>
+}
