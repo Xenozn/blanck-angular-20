@@ -1,0 +1,31 @@
+<h1>Connexion</h1>
+
+<form (ngSubmit)="loginSite()">
+  <div>
+    <label for="username">Utilisateur</label><br>
+    <input
+      id="username"
+      type="text"
+      [(ngModel)]="username"
+      name="username"
+      required
+    />
+  </div>
+
+  <br>
+
+  <div>
+    <label for="password">Mot de passe</label><br>
+    <input
+      id="password"
+      type="password"
+      [(ngModel)]="password"
+      name="password"
+      required
+    />
+  </div>
+
+  <br>
+
+  <button type="submit">Se connecter</button>
+</form>

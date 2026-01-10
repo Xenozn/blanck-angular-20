@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "firstName": "Lucas",
+    "lastName": "Moreau",
+    "email": "test@test.com",
+    "password": "admin",
+    "username": "admin",
+    "country": "France",
+    "city": "Paris",
+    "address": "12 Rue du Test",
+    "postalCode": "75001"
+  }
+]
