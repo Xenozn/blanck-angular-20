@@ -1,22 +1,22 @@
-import {inject, Injectable, signal} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {catchError, finalize, map, tap, throwError} from 'rxjs';
-import {PostModel} from '../_models/post';
+import { inject, Injectable, signal } from '@angular/core';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import { catchError, finalize, map, retry, tap, throwError, timeout } from 'rxjs';
+import { PostModel } from '../_models/post';
+import { Errors } from './errors';
 
 @Injectable({
   providedIn: 'root',
 })
-
 export class PostService {
   private http = inject(HttpClient);
+  private errors = inject(Errors);
   private apiUrl = 'https://jsonplaceholder.typicode.com/posts';
 
-
   private _posts = signal<PostModel[]>([]);
-
-
   readonly posts = this._posts.asReadonly();
 
+  private _error = signal<string | null>(null);
+  readonly error = this._error.asReadonly();
 
   private transformPosts(data: any): PostModel {
     return {
@@ -27,26 +27,24 @@ export class PostService {
   }
 
   getPosts() {
-    console.log('Fetching posts from API:', this.apiUrl);
+    // Reset de l'erreur au début de l'appel
+    this._error.set(null);
+
     return this.http.get<any[]>(this.apiUrl).pipe(
-      map(data =>{
-        const transformed = data.map(item => this.transformPosts(item));
-        return transformed;
+      timeout(5000),
+      retry(2),
+      map(data => data.map(item => this.transformPosts(item))),
+      tap(transformedData => {
+        this._posts.set(transformedData);
       }),
-      tap((data) => {
-        this._posts.set(data)
-      }),
-      catchError((error) => {
-        console.error('Error fetching posts:', error);
-        console.log(`Erreur: ${error.status || 'unknown status'} - ${error.message || 'no message'}`);
-        return throwError(() => error);
+      catchError((err:HttpErrorResponse) => {
+        const errorMessage = this.errors.handleHttpError(err);
+        this._error.set(errorMessage);
+        return throwError(() => err);
       }),
       finalize(() => {
-        console.log('Completed fetching posts from API.');
+        console.log('Fetching posts sequence completed.');
       })
     );
   }
-
-
-
 }

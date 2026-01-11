@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import {HttpErrorResponse} from '@angular/common/module.d';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Errors {
   handleHttpError(error: HttpErrorResponse): string {
-    console.error('An error occurred:', error);
     switch (error.status) {
       case 0:
         return 'erreur réseauy -verifier votre connextion'
@@ -19,7 +18,7 @@ export class Errors {
       case 404:
         return 'Not Found - Ressource non trouvée.';
       case 500:
-        return 'Internal Server Error - Erreur interne du serveur.';
+        return 'Internal Server Error - Erreur interne du serveur. test';
       case  502:
         return 'Bad Gateway - Mauvaise passerelle.';
       case 503:
