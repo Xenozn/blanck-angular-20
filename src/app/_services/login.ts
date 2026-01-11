@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { UserInterface } from '../_interfaces/user';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
+import {environment} from '../environments/environments';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LoginService {
-  private readonly USER_DATA_KEY = 'userData';
+  private readonly USER_DATA_KEY = environment.key_local_storage_user;
   private jsonUrl = 'assets/data/user.json';
   private users: UserInterface[] = [];
 

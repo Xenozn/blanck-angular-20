@@ -1,0 +1,14 @@
+<p>posts works!</p>
+
+
+<button (click)="loadPosts()"> Charger les posts</button>
+
+@if (postService.error()){
+  <p>Erreur lors du chargement des posts: {{ postService.error()}}</p>
+}
+
+@for (post of postService.posts(); track post.id){
+  <p>{{ post.title}}</p>
+}
+
+
