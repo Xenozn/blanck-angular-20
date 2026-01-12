@@ -9,6 +9,7 @@ import {Component, input} from '@angular/core';
 export class Detail {
 
   public id = input<string | undefined>();
+  public title = input<string | undefined>();
 
 
 }
