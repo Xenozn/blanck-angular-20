@@ -1,8 +1,8 @@
 import { inject, Injectable, signal } from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { catchError, finalize, map, retry, tap, throwError, timeout } from 'rxjs';
-import { PostModel } from '../_models/post';
 import { Errors } from './errors';
+import {PostInterface} from '../_interfaces/post';
 
 @Injectable({
   providedIn: 'root',
@@ -12,13 +12,13 @@ export class PostService {
   private errors = inject(Errors);
   private apiUrl = 'https://jsonplaceholder.typicode.com/posts';
 
-  private _posts = signal<PostModel[]>([]);
+  private _posts = signal<PostInterface[]>([]);
   readonly posts = this._posts.asReadonly();
 
   private _error = signal<string | null>(null);
   readonly error = this._error.asReadonly();
 
-  private transformPosts(data: any): PostModel {
+  private transformPosts(data: any): PostInterface {
     return {
       id: data.id,
       title: data.title,
