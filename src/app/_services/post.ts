@@ -27,7 +27,6 @@ export class PostService {
   }
 
   getPosts() {
-    // Reset de l'erreur au début de l'appel
     this._error.set(null);
 
     return this.http.get<any[]>(this.apiUrl).pipe(
