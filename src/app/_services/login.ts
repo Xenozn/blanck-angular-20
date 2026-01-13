@@ -4,13 +4,15 @@ import { UserInterface } from '../_interfaces/user';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import {environment} from '../environments/environments';
+import * as bcrypt from 'bcryptjs';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class LoginService {
   private readonly USER_DATA_KEY = environment.key_local_storage_user;
-  private jsonUrl = 'assets/data/user.json';
+  private jsonUrl = environment.url_json_users;
   private users: UserInterface[] = [];
 
   isLoggedIn = signal<boolean>(false);
@@ -65,39 +67,46 @@ export class LoginService {
   async login(username: string, password: string): Promise<boolean> {
     try {
       const users = await this.loadUsers();
-      const user = users.find(
-        (u) => u.username === username && u.password === password
-      );
+      const user = users.find(u => u.username === username);
 
-      if (user) {
-        const userDataToStore = {
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          username: user.username,
-          country: user.country,
-          city: user.city,
-          address: user.address,
-          postalCode: user.postalCode
-        };
-
-        const encodedData = this.encodeData(JSON.stringify(userDataToStore));
-
-        localStorage.setItem(this.USER_DATA_KEY, encodedData);
-
-        this.isLoggedIn.set(true);
-        this.currentUser.set(userDataToStore as UserInterface);
-        return true;
-      } else {
+      if (!user) {
         this.isLoggedIn.set(false);
         this.currentUser.set(null);
         return false;
       }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        this.isLoggedIn.set(false);
+        this.currentUser.set(null);
+        return false;
+      }
+
+      const userDataToStore = {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        username: user.username,
+        country: user.country,
+        city: user.city,
+        address: user.address,
+        postalCode: user.postalCode
+      };
+
+      const encodedData = this.encodeData(JSON.stringify(userDataToStore));
+      localStorage.setItem(this.USER_DATA_KEY, encodedData);
+
+      this.isLoggedIn.set(true);
+      this.currentUser.set(userDataToStore as UserInterface);
+
+      return true;
     } catch (error) {
       return false;
     }
   }
+
 
   isLog(): boolean {
     return this.isLoggedIn();
